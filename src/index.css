@@ -1,0 +1,132 @@
+:root {
+  --primary-blue: #1b4a6b;
+  --sidebar-bg: #1b2e40;
+
+  --baixo: #1f8a5c;
+  --baixo-bg: #e5f6ec;
+  --moderado: #e0a825;
+  --moderado-bg: #fef6e3;
+  --alto: #e0722a;
+  --alto-bg: #fdeee4;
+  --critico: #c1352b;
+  --critico-bg: #fce9e7;
+
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --border: #e2e7ec;
+
+  --radius: 12px;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  --sidebar-width: 240px;
+  --header-height: 72px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 400;
+  background: var(--bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+textarea,
+input {
+  font-family: inherit;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge--baixo {
+  color: var(--baixo);
+  background: var(--baixo-bg);
+}
+.badge--moderado {
+  color: var(--moderado);
+  background: var(--moderado-bg);
+}
+.badge--alto {
+  color: var(--alto);
+  background: var(--alto-bg);
+}
+.badge--critico {
+  color: var(--critico);
+  background: var(--critico-bg);
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border);
+}
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn--primary {
+  background: var(--primary-blue);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: #163d58;
+}
+
+.btn--secondary {
+  background: var(--surface);
+  color: var(--primary-blue);
+  border: 1px solid var(--border);
+}
+
+.btn--secondary:hover {
+  background: var(--bg);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
