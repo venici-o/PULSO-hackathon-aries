@@ -104,14 +104,3 @@ a nota (também visível na Tela 3):
    (cobertura, fila coberta/acompanhamento, linha de corte).
 6. **Ações e Resultados** — decisões registradas + KPIs de processo (tempo
    entre sinal e intervenção), não de impacto em saúde.
-
-## Vocabulário
-
-Usar sempre: priorização operacional, fila dinâmica de prioridades, linha de
-corte operacional, capacidade disponível, sinais de risco, explicabilidade,
-apoio à decisão, cobertura potencial das prioridades, recomendação
-contextualizada, "prioridade operacional X/100" (nunca "índice" sozinho).
-
-Evitar: "dashboard climático", "previsão de focos de doenças", "IA decide
-onde as equipes vão", "mapa inteligente", "algoritmo revolucionário",
-"reduziremos os casos de dengue".
