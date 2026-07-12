@@ -59,7 +59,7 @@ export default function TelaExplicacao() {
     percentual: PESOS_PRIORIZACAO[c.chave] * 100,
   }));
 
-  const maxContrib = Math.max(...contribuicoes.map((c) => c.contribuicao));
+  const maxContrib = Math.max(...contribuicoes.map((c) => c.contribuicao)) || 1;
 
   return (
     <div className="tela">

@@ -1,6 +1,7 @@
 import time
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 import requests
 
@@ -83,9 +84,9 @@ def _fallback_chuva(ano: int) -> pd.DataFrame:
     for semana in range(1, 53):
         # Sazonalidade Recife: chuvoso jan-jun, seco jul-dez
         if semana <= 26:
-            chuva = 120 + pd.np.random.normal(0, 30)
+            chuva = 120 + np.random.normal(0, 30)
         else:
-            chuva = 50 + pd.np.random.normal(0, 15)
+            chuva = 50 + np.random.normal(0, 15)
         chuva = max(0, chuva)
         rows.append({"semana": semana, "chuva_mm": round(chuva, 1)})
     return pd.DataFrame(rows)

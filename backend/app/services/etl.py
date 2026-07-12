@@ -63,22 +63,26 @@ def build_features(semana_id: Optional[str] = None) -> pd.DataFrame:
 
         # Casos atual e anterior
         casos_atual = 0
+        casos_atual_encontrado = False
         casos_anterior = 0
+        casos_anterior_encontrado = False
         if not df_dengue.empty:
             subset = df_dengue[df_dengue["bairro_nome"].str.lower() == nome.lower()]
             if not subset.empty:
                 casos_atual = int(subset["casos"].sum())
+                casos_atual_encontrado = True
         if not df_dengue_ant.empty:
             subset_ant = df_dengue_ant[df_dengue_ant["bairro_nome"].str.lower() == nome.lower()]
             if not subset_ant.empty:
                 casos_anterior = int(subset_ant["casos"].sum())
+                casos_anterior_encontrado = True
 
-        # Fallback se não achou dados reais
-        if casos_atual == 0:
+        # Fallback só quando não há dado real (zero real != dado ausente)
+        if not casos_atual_encontrado:
             base = 5 + (b["vulnerabilidade_score"] / 100) * 20
             casos_atual = max(1, int(base + np.random.normal(0, 2)))
-        if casos_anterior == 0:
-            casos_anterior = max(1, int(casos_atual * 0.8))
+        if not casos_anterior_encontrado:
+            casos_anterior = max(1, int(casos_atual * 0.8)) if casos_atual > 0 else 1
 
         # Normalizações
         tendencia = _clamp(((casos_atual / casos_anterior) - 1) * 100 + 50)

@@ -63,11 +63,11 @@ export default function TelaRecomendacao() {
     territoriosOrdenados.find((t) => t.nome?.toUpperCase() === territorioSelecionado?.toUpperCase()) ??
     territoriosOrdenados[0];
 
+  const [acoesSelecionadas, setAcoesSelecionadas] = useState(new Set());
+
   if (!territorio) return null;
 
   const acoesDisponiveis = ACOES_POR_TERRITORIO[territorio.classificacao?.chave || "baixo"];
-
-  const [acoesSelecionadas, setAcoesSelecionadas] = useState(new Set());
 
   const toggleAcao = (acao) => {
     setAcoesSelecionadas((prev) => {
