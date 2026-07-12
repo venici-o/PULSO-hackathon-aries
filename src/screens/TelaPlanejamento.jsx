@@ -3,7 +3,8 @@ import { usePulso } from "../context/PulsoContext";
 import BadgeClassificacao from "../components/BadgeClassificacao";
 
 const MIN_EQUIPES = 1;
-const MAX_EQUIPES = 6;
+const MAX_EQUIPES = 10;
+const BAIRROS_VISIVEIS = 15;
 
 export default function TelaPlanejamento() {
   const { capacidadeEquipes, setCapacidadeEquipes, cobertura, territoriosOrdenados } =
@@ -81,12 +82,17 @@ export default function TelaPlanejamento() {
           <div className="mini-fila__titulo">
             Cobertos com a capacidade atual ({cobertura.cobertos.length})
           </div>
-          {cobertura.cobertos.map((territorio) => (
+          {cobertura.cobertos.slice(0, Math.min(capacidadeEquipes, BAIRROS_VISIVEIS)).map((territorio) => (
             <div className="mini-fila__item" key={territorio.nome}>
               <span>{territorio.nome}</span>
               <BadgeClassificacao classificacao={territorio.classificacao} />
             </div>
           ))}
+          {capacidadeEquipes > BAIRROS_VISIVEIS && (
+            <div className="mini-fila__mais">
+              + {capacidadeEquipes - BAIRROS_VISIVEIS} outros territórios cobertos
+            </div>
+          )}
         </div>
 
         <div className="card mini-fila">
@@ -98,12 +104,19 @@ export default function TelaPlanejamento() {
               Todos os territórios estão cobertos pela capacidade atual.
             </div>
           ) : (
-            cobertura.restante.map((territorio) => (
-              <div className="mini-fila__item" key={territorio.nome}>
-                <span>{territorio.nome}</span>
-                <BadgeClassificacao classificacao={territorio.classificacao} />
-              </div>
-            ))
+            <>
+              {cobertura.restante.slice(0, Math.max(0, BAIRROS_VISIVEIS - capacidadeEquipes)).map((territorio) => (
+                <div className="mini-fila__item" key={territorio.nome}>
+                  <span>{territorio.nome}</span>
+                  <BadgeClassificacao classificacao={territorio.classificacao} />
+                </div>
+              ))}
+              {cobertura.restante.length > Math.max(0, BAIRROS_VISIVEIS - capacidadeEquipes) && (
+                <div className="mini-fila__mais">
+                  + {cobertura.restante.length - Math.max(0, BAIRROS_VISIVEIS - capacidadeEquipes)} outros territórios em monitoramento de rotina
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

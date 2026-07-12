@@ -1,6 +1,5 @@
-import { createContext, useContext, useMemo, useState } from "react";
-import { territorios as territoriosBase } from "../data/territorios";
-import { calcularPrioridade } from "../data/priorizacao";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { fetchPrioridade } from "../services/api";
 
 const PulsoContext = createContext(null);
 
@@ -16,21 +15,55 @@ const DECISAO_SEED = {
 };
 
 export function PulsoProvider({ children }) {
-  const [capacidadeEquipes, setCapacidadeEquipes] = useState(3);
+  const [capacidadeEquipes, setCapacidadeEquipes] = useState(6);
   const [territorioSelecionado, setTerritorioSelecionado] = useState(null);
   const [decisoes, setDecisoes] = useState([DECISAO_SEED]);
   const [telaAtiva, setTelaAtiva] = useState("visao-geral");
+  const [territoriosOrdenados, setTerritoriosOrdenados] = useState([]);
+  const [apiStatus, setApiStatus] = useState({ loading: true, error: null });
 
-  // Sinais brutos são estáticos: o cálculo em si não depende da capacidade.
-  // A capacidade só desloca a linha de corte sobre a fila já ordenada.
-  const territoriosOrdenados = useMemo(() => {
-    return territoriosBase
-      .map((territorio) => ({
-        ...territorio,
-        ...calcularPrioridade(territorio),
-      }))
-      .sort((a, b) => b.score - a.score);
-  }, []);
+  // Busca prioridades do backend no mount
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        setApiStatus({ loading: true, error: null });
+        const data = await fetchPrioridade({ topN: 94, capacidade: capacidadeEquipes });
+        if (cancelled) return;
+        // Mapeia resposta da API para formato que as telas esperam
+        const mapped = (data.todos || []).map((t) => ({
+          nome: t.bairro_nome,
+          ds: t.ds,
+          rpa: t.rpa,
+          score: t.score,
+          classificacao: t.classificacao,
+          // Componentes brutos para explicabilidade
+          tendenciaEpidemiologica: t.componentes?.tendencia_epidemiologica ?? 0,
+          condicoesClimaticas: t.componentes?.condicoes_climaticas ?? 0,
+          focosIdentificados: t.componentes?.focos_identificados ?? 0,
+          vulnerabilidadeTerritorial: t.componentes?.vulnerabilidade_territorial ?? 0,
+          historico: t.componentes?.historico ?? 0,
+          // Metadados
+          casosSemanaAtual: t.metadados?.casos_semana_atual ?? 0,
+          casosSemanaAnterior: t.metadados?.casos_semana_anterior ?? 0,
+          chuvaAcumuladaMm: t.metadados?.chuva_mm ?? 0,
+          focosAtuais: t.metadados?.focos_atuais ?? 0,
+          // Placeholders para compatibilidade
+          vulnerabilidade: t.componentes?.vulnerabilidade_territorial >= 70 ? "Alto" : t.componentes?.vulnerabilidade_territorial >= 40 ? "Médio" : "Baixo",
+          historicoAgravamento: t.componentes?.historico >= 75,
+          setoresPrioritarios: ["Setor 01"],
+        }));
+        setTerritoriosOrdenados(mapped);
+        setApiStatus({ loading: false, error: null });
+      } catch (e) {
+        if (cancelled) return;
+        console.error("[PulsoContext] Falha ao carregar prioridades da API:", e);
+        setApiStatus({ loading: false, error: e.message });
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, [capacidadeEquipes]);
 
   const cobertura = useMemo(() => {
     const somaTotal = territoriosOrdenados.reduce((acc, t) => acc + t.score, 0);

@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { PulsoProvider, usePulso } from "./context/PulsoContext";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
+import ModalFontesDados from "./components/ModalFontesDados";
+import ModalAlgoritmo from "./components/ModalAlgoritmo";
 import TelaVisaoGeral from "./screens/TelaVisaoGeral";
 import TelaPrioridades from "./screens/TelaPrioridades";
 import TelaExplicacao from "./screens/TelaExplicacao";
@@ -30,14 +33,42 @@ function Conteudo() {
 }
 
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [modalFontesOpen, setModalFontesOpen] = useState(false);
+  const [modalAlgoritmoOpen, setModalAlgoritmoOpen] = useState(false);
+
   return (
     <PulsoProvider>
       <div className="app-shell">
-        <Sidebar />
+        <button
+          className="sidebar-toggle"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label="Abrir menu"
+        >
+          ☰
+        </button>
+        <div
+          className={`sidebar-overlay${sidebarOpen ? " is-visible" : ""}`}
+          onClick={() => setSidebarOpen(false)}
+        />
+        <Sidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          onOpenFontes={() => setModalFontesOpen(true)}
+          onOpenAlgoritmo={() => setModalAlgoritmoOpen(true)}
+        />
         <div className="app-main">
           <Header />
           <Conteudo />
         </div>
+        <ModalFontesDados
+          isOpen={modalFontesOpen}
+          onClose={() => setModalFontesOpen(false)}
+        />
+        <ModalAlgoritmo
+          isOpen={modalAlgoritmoOpen}
+          onClose={() => setModalAlgoritmoOpen(false)}
+        />
       </div>
     </PulsoProvider>
   );

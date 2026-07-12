@@ -10,7 +10,15 @@
       "Bash(npx --yes playwright install chromium --with-deps)",
       "Bash(npx --yes playwright install chromium)",
       "Bash(npm init *)",
-      "Bash(node drive.mjs)"
+      "Bash(node drive.mjs)",
+      "Skill(code-review)",
+      "Skill(code-review:*)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -c \"import pandas as pd; print\\(pd.__version__\\); print\\(pd.np\\)\")",
+      "Bash(pip show *)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(grep -E '__pycache__|\\\\.pyc$')",
+      "Bash(git rm *)"
     ]
   }
 }
