@@ -1,6 +1,6 @@
 # PULSO
 
-Inteligência para Priorização da Vigilância em Saúde.
+Inteligência para Priorização da Vigilância em Saúde. Acesse [aqui](https://sistemapulso.up.railway.app/).
 
 PULSO é uma ferramenta de apoio à decisão para a Vigilância em Saúde de Recife.
 Ela transforma sinais epidemiológicos, climáticos e territoriais em uma fila
@@ -18,7 +18,7 @@ não a identidade do produto. O sistema recomenda; o profissional decide.
 - **Backend:** Python (Flask) com XGBoost, pandas, scikit-learn. consome dados reais do CKAN (dengue), INMET (clima) e GIS (bairros/ZEIS).
 - **ML:** Modelo XGBoost Regressor treinado com 8 features, 94 territórios. MAE ~4.04, R² ~0.87.
 
-## Como rodar
+## Como rodar localmente
 
 ### 1. Backend (Python)
 
