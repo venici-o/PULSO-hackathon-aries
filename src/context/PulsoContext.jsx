@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { fetchPrioridade } from "../services/api";
+import { SEMANA_PADRAO } from "../config";
 
 const PulsoContext = createContext(null);
 
@@ -16,19 +17,24 @@ const DECISAO_SEED = {
 
 export function PulsoProvider({ children }) {
   const [capacidadeEquipes, setCapacidadeEquipes] = useState(6);
+  const [semanaSelecionada, setSemanaSelecionada] = useState(SEMANA_PADRAO);
   const [territorioSelecionado, setTerritorioSelecionado] = useState(null);
   const [decisoes, setDecisoes] = useState([DECISAO_SEED]);
   const [telaAtiva, setTelaAtiva] = useState("visao-geral");
   const [territoriosOrdenados, setTerritoriosOrdenados] = useState([]);
   const [apiStatus, setApiStatus] = useState({ loading: true, error: null });
 
-  // Busca prioridades do backend no mount
+  // Busca prioridades do backend no mount e a cada mudança de semana/capacidade
   useEffect(() => {
     let cancelled = false;
     async function load() {
       try {
         setApiStatus({ loading: true, error: null });
-        const data = await fetchPrioridade({ topN: 94, capacidade: capacidadeEquipes });
+        const data = await fetchPrioridade({
+          semanaId: semanaSelecionada,
+          topN: 94,
+          capacidade: capacidadeEquipes,
+        });
         if (cancelled) return;
         // Mapeia resposta da API para formato que as telas esperam
         const mapped = (data.todos || []).map((t) => ({
@@ -63,7 +69,7 @@ export function PulsoProvider({ children }) {
     }
     load();
     return () => { cancelled = true; };
-  }, [capacidadeEquipes]);
+  }, [capacidadeEquipes, semanaSelecionada]);
 
   const cobertura = useMemo(() => {
     const somaTotal = territoriosOrdenados.reduce((acc, t) => acc + t.score, 0);
@@ -98,6 +104,8 @@ export function PulsoProvider({ children }) {
     territoriosOrdenados,
     capacidadeEquipes,
     setCapacidadeEquipes,
+    semanaSelecionada,
+    setSemanaSelecionada,
     territorioSelecionado,
     setTerritorioSelecionado,
     decisoes,
