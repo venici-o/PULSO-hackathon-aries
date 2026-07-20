@@ -35,6 +35,12 @@ def build_features(semana_id: Optional[str] = None) -> pd.DataFrame:
     semana_ant = semana - 1 if semana > 1 else 52
     ano_ant = ano if semana > 1 else ano - 1
 
+    # A semana epidemiológica do SINAN (SEM_NOT) é codificada como YYYYWW
+    # (ex.: 202505 = semana 5 de 2025). O agregado de ckan_client preserva
+    # esse código na coluna "semana", então filtramos pelo código, não por 1-52.
+    semana_cod = ano * 100 + semana
+    semana_ant_cod = ano_ant * 100 + semana_ant
+
     # --- 1. Dados epidemiológicos ---
     try:
         df_dengue = ckan_client.get_dengue_by_bairro_semana(ano)
@@ -67,14 +73,16 @@ def build_features(semana_id: Optional[str] = None) -> pd.DataFrame:
         casos_anterior = 0
         casos_anterior_encontrado = False
         if not df_dengue.empty:
-            subset = df_dengue[df_dengue["bairro_nome"].str.lower() == nome.lower()]
-            if not subset.empty:
-                casos_atual = int(subset["casos"].sum())
+            # "encontrado" = bairro existe nos dados reais (qualquer semana);
+            # a contagem da semana pedida pode ser 0 (zero real != dado ausente).
+            bairro_rows = df_dengue[df_dengue["bairro_nome"].str.lower() == nome.lower()]
+            if not bairro_rows.empty:
+                casos_atual = int(bairro_rows[bairro_rows["semana"] == semana_cod]["casos"].sum())
                 casos_atual_encontrado = True
         if not df_dengue_ant.empty:
-            subset_ant = df_dengue_ant[df_dengue_ant["bairro_nome"].str.lower() == nome.lower()]
-            if not subset_ant.empty:
-                casos_anterior = int(subset_ant["casos"].sum())
+            bairro_rows_ant = df_dengue_ant[df_dengue_ant["bairro_nome"].str.lower() == nome.lower()]
+            if not bairro_rows_ant.empty:
+                casos_anterior = int(bairro_rows_ant[bairro_rows_ant["semana"] == semana_ant_cod]["casos"].sum())
                 casos_anterior_encontrado = True
 
         # Fallback só quando não há dado real (zero real != dado ausente)
@@ -85,7 +93,14 @@ def build_features(semana_id: Optional[str] = None) -> pd.DataFrame:
             casos_anterior = max(1, int(casos_atual * 0.8)) if casos_atual > 0 else 1
 
         # Normalizações
-        tendencia = _clamp(((casos_atual / casos_anterior) - 1) * 100 + 50)
+        # Tendência semana-a-semana. Com contagem semanal, casos_anterior pode
+        # ser 0 (zero real): 0->N é tendência de alta; 0->0 é neutro.
+        if casos_anterior > 0:
+            tendencia = _clamp(((casos_atual / casos_anterior) - 1) * 100 + 50)
+        elif casos_atual > 0:
+            tendencia = 100.0
+        else:
+            tendencia = 50.0
         clima = _clamp((chuva_atual / chuva_media) * 50) if chuva_media > 0 else 50
 
         # Focos (lookup fixo + variação)
