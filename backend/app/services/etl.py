@@ -41,6 +41,10 @@ def build_features(semana_id: Optional[str] = None) -> pd.DataFrame:
     semana_cod = ano * 100 + semana
     semana_ant_cod = ano_ant * 100 + semana_ant
 
+    # Reprodutibilidade: o ranking mostrado ao usuário não pode variar entre
+    # requisições idênticas.
+    np.random.seed(semana_cod)
+
     # --- 1. Dados epidemiológicos ---
     try:
         df_dengue = ckan_client.get_dengue_by_bairro_semana(ano)
