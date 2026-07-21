@@ -1,0 +1,79 @@
+{
+  "features": [
+    "casos",
+    "casos_lag1",
+    "casos_lag2",
+    "casos_lag3",
+    "roll4_mean",
+    "trend",
+    "chuva_mm",
+    "chuva_lag2",
+    "chuva_lag4",
+    "chuva_roll4",
+    "temp_media",
+    "temp_max",
+    "temp_roll4",
+    "sin_woy",
+    "cos_woy",
+    "vuln",
+    "hist",
+    "vizinhos_ds"
+  ],
+  "horizontes": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "anos_treino": [
+    2024,
+    2025
+  ],
+  "params": {
+    "n_estimators": 300,
+    "max_depth": 5,
+    "learning_rate": 0.05,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "objective": "count:poisson",
+    "random_state": 42
+  },
+  "backtest": {
+    "cutoff": 202520,
+    "k": 10,
+    "metrics": {
+      "h1": {
+        "mae_xgb": 1.2602,
+        "mae_persistencia": 1.3647,
+        "precisao_k_xgb": 0.6375,
+        "precisao_k_persistencia": 0.5656,
+        "n_teste": 3008
+      },
+      "h2": {
+        "mae_xgb": 1.3305,
+        "mae_persistencia": 1.4756,
+        "precisao_k_xgb": 0.6258,
+        "precisao_k_persistencia": 0.571,
+        "n_teste": 2914
+      },
+      "h3": {
+        "mae_xgb": 1.397,
+        "mae_persistencia": 1.5227,
+        "precisao_k_xgb": 0.59,
+        "precisao_k_persistencia": 0.5467,
+        "n_teste": 2820
+      },
+      "h4": {
+        "mae_xgb": 1.439,
+        "mae_persistencia": 1.58,
+        "precisao_k_xgb": 0.5931,
+        "precisao_k_persistencia": 0.5241,
+        "n_teste": 2726
+      }
+    }
+  },
+  "fontes": {
+    "casos": "SINAN (cache)",
+    "clima": "Open-Meteo archive"
+  }
+}
