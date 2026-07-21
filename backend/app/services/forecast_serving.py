@@ -2,6 +2,7 @@ from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
+from epiweeks import Week
 
 from app import config
 from app.services import forecast_features as ff
@@ -12,6 +13,13 @@ _featured_panel: Optional[pd.DataFrame] = None
 
 def _clamp(v, lo=0.0, hi=100.0):
     return np.clip(v, lo, hi)
+
+
+def _semana_alvo(semana_cod: int, horizon: int) -> int:
+    """Código YYYYWW da semana-alvo (referência + horizon), com virada de ano."""
+    ano, sem = divmod(semana_cod, 100)
+    w = Week(ano, sem, system="cdc") + horizon
+    return w.year * 100 + w.week
 
 
 def get_featured_panel() -> pd.DataFrame:
@@ -73,8 +81,10 @@ def build_prioridades(semana_id: Optional[str] = None,
     cur["temp_media"] = cur["temp_media"].round(1)
     cur["horizonte"] = horizon
 
+    alvo_cod = _semana_alvo(semana_cod, horizon)
     meta = {
         "semana_cod": int(semana_cod),
+        "semana_alvo_cod": int(alvo_cod),
         "horizonte": horizon,
         "fonte_casos": "SINAN (cache)",
         "fonte_clima": "Open-Meteo",

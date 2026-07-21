@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { usePulso } from "../context/PulsoContext";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
@@ -24,21 +25,31 @@ function styleFeature(feature) {
 }
 
 export default function MapaRecife({ onBairroClick }) {
+  const { semanaSelecionada, horizonteSelecionado } = usePulso();
   const [geojson, setGeojson] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE}/mapa`)
+    let cancelled = false;
+    setLoading(true);
+    const qs = new URLSearchParams({
+      semana_id: semanaSelecionada,
+      horizonte: String(horizonteSelecionado),
+    });
+    fetch(`${API_BASE}/mapa?${qs}`)
       .then((r) => r.json())
       .then((data) => {
+        if (cancelled) return;
         setGeojson(data);
         setLoading(false);
       })
       .catch((err) => {
+        if (cancelled) return;
         console.error("[MapaRecife] Erro ao carregar GeoJSON:", err);
         setLoading(false);
       });
-  }, []);
+    return () => { cancelled = true; };
+  }, [semanaSelecionada, horizonteSelecionado]);
 
   if (loading) {
     return <div className="mapa-loading">Carregando mapa...</div>;
@@ -61,6 +72,7 @@ export default function MapaRecife({ onBairroClick }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <GeoJSON
+          key={`${semanaSelecionada}-${horizonteSelecionado}`}
           data={geojson}
           style={styleFeature}
           onEachFeature={(feature, layer) => {

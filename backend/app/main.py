@@ -115,6 +115,7 @@ def calcular_prioridade():
     return jsonify({
         "semana_id": semana_id or "atual",
         "semana_cod": meta["semana_cod"],
+        "semana_alvo_cod": meta["semana_alvo_cod"],
         "horizonte": meta["horizonte"],
         "total_bairros": len(df_sorted),
         "top_n": top_n,

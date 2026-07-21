@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { fetchPrioridade } from "../services/api";
-import { SEMANA_PADRAO } from "../config";
+import { SEMANA_PADRAO, HORIZONTE_PADRAO } from "../config";
 
 const PulsoContext = createContext(null);
 
@@ -18,6 +18,8 @@ const DECISAO_SEED = {
 export function PulsoProvider({ children }) {
   const [capacidadeEquipes, setCapacidadeEquipes] = useState(6);
   const [semanaSelecionada, setSemanaSelecionada] = useState(SEMANA_PADRAO);
+  const [horizonteSelecionado, setHorizonteSelecionado] = useState(HORIZONTE_PADRAO);
+  const [contextoPrevisao, setContextoPrevisao] = useState({ referenciaCod: null, alvoCod: null });
   const [territorioSelecionado, setTerritorioSelecionado] = useState(null);
   const [decisoes, setDecisoes] = useState([DECISAO_SEED]);
   const [telaAtiva, setTelaAtiva] = useState("visao-geral");
@@ -34,6 +36,7 @@ export function PulsoProvider({ children }) {
           semanaId: semanaSelecionada,
           topN: 94,
           capacidade: capacidadeEquipes,
+          horizonte: horizonteSelecionado,
         });
         if (cancelled) return;
         // Mapeia resposta da API para formato que as telas esperam
@@ -49,10 +52,14 @@ export function PulsoProvider({ children }) {
           focosIdentificados: t.componentes?.focos_identificados ?? 0,
           vulnerabilidadeTerritorial: t.componentes?.vulnerabilidade_territorial ?? 0,
           historico: t.componentes?.historico ?? 0,
+          // Previsão
+          casosPrevistos: t.metadados?.casos_previstos ?? 0,
+          horizonte: t.metadados?.horizonte ?? 1,
           // Metadados
           casosSemanaAtual: t.metadados?.casos_semana_atual ?? 0,
           casosSemanaAnterior: t.metadados?.casos_semana_anterior ?? 0,
           chuvaAcumuladaMm: t.metadados?.chuva_mm ?? 0,
+          tempMedia: t.metadados?.temp_media ?? 0,
           focosAtuais: t.metadados?.focos_atuais ?? 0,
           // Placeholders para compatibilidade
           vulnerabilidade: t.componentes?.vulnerabilidade_territorial >= 70 ? "Alto" : t.componentes?.vulnerabilidade_territorial >= 40 ? "Médio" : "Baixo",
@@ -60,6 +67,10 @@ export function PulsoProvider({ children }) {
           setoresPrioritarios: ["Setor 01"],
         }));
         setTerritoriosOrdenados(mapped);
+        setContextoPrevisao({
+          referenciaCod: data.semana_cod ?? null,
+          alvoCod: data.semana_alvo_cod ?? null,
+        });
         setApiStatus({ loading: false, error: null });
       } catch (e) {
         if (cancelled) return;
@@ -69,7 +80,7 @@ export function PulsoProvider({ children }) {
     }
     load();
     return () => { cancelled = true; };
-  }, [capacidadeEquipes, semanaSelecionada]);
+  }, [capacidadeEquipes, semanaSelecionada, horizonteSelecionado]);
 
   const cobertura = useMemo(() => {
     const somaTotal = territoriosOrdenados.reduce((acc, t) => acc + t.score, 0);
@@ -106,6 +117,9 @@ export function PulsoProvider({ children }) {
     setCapacidadeEquipes,
     semanaSelecionada,
     setSemanaSelecionada,
+    horizonteSelecionado,
+    setHorizonteSelecionado,
+    contextoPrevisao,
     territorioSelecionado,
     setTerritorioSelecionado,
     decisoes,

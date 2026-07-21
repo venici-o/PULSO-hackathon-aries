@@ -1,5 +1,6 @@
 import { usePulso } from "../context/PulsoContext";
 import BadgeClassificacao from "../components/BadgeClassificacao";
+import { formatSemana } from "../config";
 
 function getTendenciaTexto(tendencia) {
   if (tendencia >= 70) return { texto: "Subindo", classe: "fila-tabela__tendencia--subindo" };
@@ -8,7 +9,9 @@ function getTendenciaTexto(tendencia) {
 }
 
 export default function TelaPrioridades() {
-  const { territoriosOrdenados, capacidadeEquipes, setCapacidadeEquipes, irPara } = usePulso();
+  const { territoriosOrdenados, capacidadeEquipes, irPara, contextoPrevisao } = usePulso();
+
+  const semanaAlvo = formatSemana(contextoPrevisao.alvoCod);
 
   const top3 = territoriosOrdenados.slice(0, 3);
   const restante = territoriosOrdenados.slice(3);
@@ -16,8 +19,8 @@ export default function TelaPrioridades() {
   return (
     <div className="tela">
       <p className="tela__mensagem">
-        Territórios ordenados pela necessidade de atuação, considerando risco e
-        capacidade operacional.
+        Territórios ordenados pela <strong>previsão de casos</strong> para a {semanaAlvo},
+        considerando risco e capacidade operacional.
       </p>
 
       {/* Header capacidade */}
@@ -55,7 +58,12 @@ export default function TelaPrioridades() {
                 <BadgeClassificacao classificacao={territorio.classificacao} />
               </div>
               <div className="top3-card__score">
-                Índice: {territorio.score}/100
+                <span className="top3-card__previsao">
+                  ≈ {territorio.casosPrevistos} casos previstos
+                </span>
+                <span className="top3-card__previsao-sub">
+                  {semanaAlvo} · índice {territorio.score}/100
+                </span>
               </div>
               <div className="top3-card__sinais">
                 <div className="top3-card__sinais-titulo">Principais sinais</div>
@@ -87,6 +95,7 @@ export default function TelaPrioridades() {
               <tr>
                 <th>Posição</th>
                 <th>Território</th>
+                <th>Casos previstos</th>
                 <th>Índice</th>
                 <th>Nível</th>
                 <th>Tendência</th>
@@ -104,6 +113,7 @@ export default function TelaPrioridades() {
                   >
                     <td className="fila-tabela__posicao">{posicao}</td>
                     <td className="fila-tabela__nome">{territorio.nome}</td>
+                    <td className="fila-tabela__score">≈ {territorio.casosPrevistos}</td>
                     <td className="fila-tabela__score">{territorio.score}</td>
                     <td>
                       <BadgeClassificacao classificacao={territorio.classificacao} />
