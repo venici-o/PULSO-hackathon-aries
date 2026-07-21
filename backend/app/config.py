@@ -11,6 +11,13 @@ CKAN_API_URL = f"{CKAN_BASE_URL}/api/3"
 
 INMET_BDMEP_URL = os.getenv("INMET_BDMEP_URL", "https://bdmep.inmet.gov.br/webservices")
 
+# Open-Meteo: histórico climático real, gratuito e sem autenticação.
+# Fonte de chuva e temperatura por semana epidemiológica (substitui o BDMEP).
+OPENMETEO_ARCHIVE_URL = os.getenv(
+    "OPENMETEO_ARCHIVE_URL", "https://archive-api.open-meteo.com/v1/archive")
+RECIFE_LAT = float(os.getenv("RECIFE_LAT", "-8.05"))
+RECIFE_LON = float(os.getenv("RECIFE_LON", "-34.88"))
+
 # Resource IDs CKAN (encontrados na pesquisa)
 DATASET_DENGUE_ID = "3c990c15-29ad-46e5-8fd2-1b83289bb9f5"
 DATASET_DISTRITOS_ID = "09ae25d3-7330-4fff-af57-9e9191a4c2f6"
@@ -23,7 +30,7 @@ MODEL_FILE = MODELS_DIR / "xgb_prioridade.json"
 
 CACHE_TTL_SECONDS = int(os.getenv("CACHE_TTL", "3600"))
 
-# Configurações do modelo
+# Configurações do modelo (legado — priorização por fórmula sintética)
 XGB_PARAMS = {
     "n_estimators": 100,
     "max_depth": 4,
@@ -33,3 +40,22 @@ XGB_PARAMS = {
     "objective": "reg:squarederror",
     "random_state": 42,
 }
+
+# --- Previsão de casos (forecast) ---
+FORECAST_HORIZONS = [1, 2, 3, 4]
+FORECAST_ANOS = [2024, 2025]
+FORECAST_META_FILE = MODELS_DIR / "forecast_meta.json"
+# Objetivo count:poisson é apropriado para contagem de casos.
+FORECAST_XGB_PARAMS = {
+    "n_estimators": 300,
+    "max_depth": 5,
+    "learning_rate": 0.05,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "objective": "count:poisson",
+    "random_state": 42,
+}
+
+
+def forecast_model_file(h: int) -> Path:
+    return MODELS_DIR / f"forecast_h{h}.json"

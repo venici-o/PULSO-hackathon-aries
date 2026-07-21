@@ -100,3 +100,43 @@ def classificar_prioridade(score: float):
     if score >= 50:
         return {"rotulo": "Moderado", "chave": "moderado"}
     return {"rotulo": "Baixo", "chave": "baixo"}
+
+
+# ============================================================
+# Previsão de casos (forecast) — modelos por horizonte
+# ============================================================
+
+_forecast_models: dict = {}
+
+# Meia-saturação do mapa casos previstos -> score 0-100. Com este valor,
+# ~5 casos/semana => 50 (Moderado), ~12 => 70 (Alto), ~28 => 85 (Crítico).
+# Monotônico em casos e comparável entre semanas (score absoluto, não relativo).
+CASOS_MEIA_SATURACAO = 5.0
+
+
+def load_forecast_model(horizon: int) -> xgb.XGBRegressor:
+    if horizon in _forecast_models:
+        return _forecast_models[horizon]
+    path = config.forecast_model_file(horizon)
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Modelo de forecast h={horizon} não encontrado em {path}. "
+            f"Rode: python -m scripts.train_forecast")
+    m = xgb.XGBRegressor()
+    m.load_model(str(path))
+    _forecast_models[horizon] = m
+    return m
+
+
+def predict_casos(df_features: pd.DataFrame, horizon: int = 1) -> np.ndarray:
+    """Prevê casos por bairro em t+horizon a partir das features de forecast."""
+    from app.services import forecast_features as ff
+    model = load_forecast_model(horizon)
+    preds = model.predict(df_features[ff.FEATURES])
+    return np.clip(preds, 0, None)
+
+
+def casos_para_score(casos) -> np.ndarray:
+    """Mapeia casos previstos -> score 0-100 (saturação suave, monotônica)."""
+    casos = np.asarray(casos, dtype=float)
+    return np.clip(100.0 * casos / (casos + CASOS_MEIA_SATURACAO), 0, 100)
