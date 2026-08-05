@@ -18,13 +18,14 @@ export async function fetchBairros() {
   return fetchJSON("/bairros");
 }
 
-export async function fetchPrioridade({ semanaId, topN = 8, capacidade = 3 } = {}) {
+export async function fetchPrioridade({ semanaId, topN = 8, capacidade = 3, horizonte = 1 } = {}) {
   return fetchJSON("/prioridade", {
     method: "POST",
     body: JSON.stringify({
       semana_id: semanaId,
       top_n: topN,
       capacidade,
+      horizonte,
     }),
   });
 }

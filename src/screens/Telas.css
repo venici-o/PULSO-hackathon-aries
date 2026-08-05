@@ -1264,6 +1264,20 @@
 .top3-card__score {
   font-size: 13px;
   color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.top3-card__previsao {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.top3-card__previsao-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .top3-card__sinais {

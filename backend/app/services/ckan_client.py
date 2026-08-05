@@ -136,9 +136,12 @@ def _fallback_dengue(year: int) -> pd.DataFrame:
 
     rows = []
     for semana in range(1, 53):
+        # "semana" no formato YYYYWW (SEM_NOT do SINAN), para casar com o
+        # caminho real e com o filtro por semana no etl.
+        semana_cod = year * 100 + semana
         for b in bairros:
             base = 5 + (b["vulnerabilidade_score"] / 100) * 30
             seasonal = 1.0 + 0.6 * ((semana - 1) / 52)
             casos = max(0, int(base * seasonal + 0))  # simplified, no numpy needed
-            rows.append({"bairro_nome": b["nome"], "semana": semana, "casos": casos})
+            rows.append({"bairro_nome": b["nome"], "semana": semana_cod, "casos": casos})
     return pd.DataFrame(rows)

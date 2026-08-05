@@ -180,6 +180,36 @@
   flex-shrink: 0;
 }
 
+.app-header__semana {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+.app-header__semana-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.app-header__semana-select {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.app-header__semana-select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+}
+
 .app-content {
   flex: 1;
   padding: 28px 32px 48px;

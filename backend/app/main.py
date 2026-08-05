@@ -7,6 +7,7 @@ from flask_cors import CORS
 from app import config
 from app.services import model as model_svc
 from app.services import etl
+from app.services import forecast_serving
 
 
 # Carregar GeoJSON dos bairros do ESIG (polígonos reais) em memória no startup
@@ -67,11 +68,9 @@ def calcular_prioridade():
     semana_id = req.get("semana_id")
     top_n = req.get("top_n", 8)
     capacidade = req.get("capacidade", 3)
+    horizonte = int(req.get("horizonte", 1))
 
-    df_features = etl.build_features(semana_id)
-    scores = model_svc.predict_scores(df_features)
-    df_features = df_features.copy()
-    df_features["score"] = scores
+    df_features, meta = forecast_serving.build_prioridades(semana_id, horizon=horizonte)
     df_features["classificacao"] = df_features["score"].apply(model_svc.classificar_prioridade)
 
     df_sorted = df_features.sort_values("score", ascending=False).reset_index(drop=True)
@@ -103,15 +102,21 @@ def calcular_prioridade():
                 "historico": _to_float(r["historico"]),
             },
             "metadados": {
+                "casos_previstos": _to_float(r["casos_previstos"]),
+                "horizonte": _to_int(r["horizonte"]),
                 "casos_semana_atual": _to_int(r["casos_semana_atual"]),
                 "casos_semana_anterior": _to_int(r["casos_semana_anterior"]),
                 "chuva_mm": _to_float(r["chuva_mm"]),
+                "temp_media": _to_float(r["temp_media"]),
                 "focos_atuais": _to_int(r["focos_atuais"]),
             },
         }
 
     return jsonify({
         "semana_id": semana_id or "atual",
+        "semana_cod": meta["semana_cod"],
+        "semana_alvo_cod": meta["semana_alvo_cod"],
+        "horizonte": meta["horizonte"],
         "total_bairros": len(df_sorted),
         "top_n": top_n,
         "capacidade": capacidade,
@@ -125,13 +130,14 @@ def calcular_prioridade():
 @app.route("/prioridade/<bairro_id>")
 def detalhe_bairro(bairro_id):
     semana_id = request.args.get("semana_id")
-    df_features = etl.build_features(semana_id)
+    horizonte = int(request.args.get("horizonte", 1))
+    df_features, _ = forecast_serving.build_prioridades(semana_id, horizon=horizonte)
     row = df_features[df_features["bairro_id"] == bairro_id]
     if row.empty:
         return jsonify({"error": "Bairro não encontrado"}), 404
 
     r = row.iloc[0]
-    score = _to_float(model_svc.predict_scores(row)[0])
+    score = _to_float(r["score"])
     return jsonify({
         "bairro_id": bairro_id,
         "bairro_nome": r["bairro_nome"],
@@ -147,9 +153,12 @@ def detalhe_bairro(bairro_id):
             "historico": _to_float(r["historico"]),
         },
         "metadados": {
+            "casos_previstos": _to_float(r["casos_previstos"]),
+            "horizonte": _to_int(r["horizonte"]),
             "casos_semana_atual": _to_int(r["casos_semana_atual"]),
             "casos_semana_anterior": _to_int(r["casos_semana_anterior"]),
             "chuva_mm": _to_float(r["chuva_mm"]),
+            "temp_media": _to_float(r["temp_media"]),
             "focos_atuais": _to_int(r["focos_atuais"]),
         },
     })
@@ -179,10 +188,8 @@ def mapa_prioridade():
         return jsonify({"error": "GeoJSON não disponível"}), 503
     
     semana_id = request.args.get("semana_id")
-    df_features = etl.build_features(semana_id)
-    scores = model_svc.predict_scores(df_features)
-    df_features = df_features.copy()
-    df_features["score"] = scores
+    horizonte = int(request.args.get("horizonte", 1))
+    df_features, _ = forecast_serving.build_prioridades(semana_id, horizon=horizonte)
     df_features["classificacao"] = df_features["score"].apply(model_svc.classificar_prioridade)
     
     # Criar lookup bairro -> score (case-insensitive)

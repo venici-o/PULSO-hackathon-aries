@@ -110,17 +110,6 @@
     "zeis_ha": 0.46
   },
   {
-    "id": "bairro_011",
-    "nome": "BAIRRO IGNORADO",
-    "ds": "DS N/A",
-    "rpa": "RPA N/A",
-    "vulnerabilidade_score": 25,
-    "vulnerabilidade_fonte": "ZEIS GIS — sem zona especial mapeada (baixa vulnerabilidade)",
-    "historico_score": 50,
-    "historico_fonte": "Sem registro destacado de surtos (neutro)",
-    "zeis_ha": 0
-  },
-  {
     "id": "bairro_012",
     "nome": "BARRO",
     "ds": "5",
