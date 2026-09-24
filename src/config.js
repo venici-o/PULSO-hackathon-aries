@@ -17,8 +17,8 @@ export function formatSemana(cod) {
 
 export const HORIZONTE_PADRAO = 1;
 export const HORIZONTES = [
-  { valor: 1, label: "próxima semana", skill: 0.64 },
-  { valor: 2, label: "2 semanas", skill: 0.63 },
+  { valor: 1, label: "próxima semana", skill: 0.63 },
+  { valor: 2, label: "2 semanas", skill: 0.62 },
   { valor: 3, label: "3 semanas", skill: 0.59 },
-  { valor: 4, label: "4 semanas", skill: 0.59 },
+  { valor: 4, label: "4 semanas", skill: 0.58 },
 ];

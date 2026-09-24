@@ -11,12 +11,19 @@ CKAN_API_URL = f"{CKAN_BASE_URL}/api/3"
 
 INMET_BDMEP_URL = os.getenv("INMET_BDMEP_URL", "https://bdmep.inmet.gov.br/webservices")
 
-# Open-Meteo: histórico climático real, gratuito e sem autenticação.
-# Fonte de chuva e temperatura por semana epidemiológica (substitui o BDMEP).
+# Open-Meteo: temperatura de apoio (a APAC não publica temperatura) e
+# fallback climático fora da cobertura APAC (2024-2025).
 OPENMETEO_ARCHIVE_URL = os.getenv(
     "OPENMETEO_ARCHIVE_URL", "https://archive-api.open-meteo.com/v1/archive")
 RECIFE_LAT = float(os.getenv("RECIFE_LAT", "-8.05"))
 RECIFE_LON = float(os.getenv("RECIFE_LON", "-34.88"))
+
+# APAC: fonte primária de chuva (Histórico Pluviométrico diário, Recife).
+# http://dados.apac.pe.gov.br:41120/boletins/historico-pluviometrico/
+APAC_HISTORICO_DIARIO_URL = os.getenv(
+    "APAC_HISTORICO_DIARIO_URL",
+    "http://dados.apac.pe.gov.br:41120/boletins/historico-pluviometrico/diario.php")
+APAC_ANOS_COBERTURA = [2024, 2025]
 
 # Resource IDs CKAN (encontrados na pesquisa)
 DATASET_DENGUE_ID = "3c990c15-29ad-46e5-8fd2-1b83289bb9f5"

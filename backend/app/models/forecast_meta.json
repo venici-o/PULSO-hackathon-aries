@@ -43,30 +43,30 @@
     "k": 10,
     "metrics": {
       "h1": {
-        "mae_xgb": 1.2602,
+        "mae_xgb": 1.2483,
         "mae_persistencia": 1.3647,
-        "precisao_k_xgb": 0.6375,
+        "precisao_k_xgb": 0.6281,
         "precisao_k_persistencia": 0.5656,
         "n_teste": 3008
       },
       "h2": {
-        "mae_xgb": 1.3305,
+        "mae_xgb": 1.3288,
         "mae_persistencia": 1.4756,
-        "precisao_k_xgb": 0.6258,
+        "precisao_k_xgb": 0.6226,
         "precisao_k_persistencia": 0.571,
         "n_teste": 2914
       },
       "h3": {
-        "mae_xgb": 1.397,
+        "mae_xgb": 1.3782,
         "mae_persistencia": 1.5227,
         "precisao_k_xgb": 0.59,
         "precisao_k_persistencia": 0.5467,
         "n_teste": 2820
       },
       "h4": {
-        "mae_xgb": 1.439,
+        "mae_xgb": 1.4386,
         "mae_persistencia": 1.58,
-        "precisao_k_xgb": 0.5931,
+        "precisao_k_xgb": 0.5759,
         "precisao_k_persistencia": 0.5241,
         "n_teste": 2726
       }
@@ -74,6 +74,6 @@
   },
   "fontes": {
     "casos": "SINAN (cache)",
-    "clima": "Open-Meteo archive"
+    "clima": "APAC (chuva) + Open-Meteo (temperatura)"
   }
 }

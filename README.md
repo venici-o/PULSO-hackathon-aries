@@ -15,7 +15,7 @@ não a identidade do produto. O sistema recomenda; o profissional decide.
 ## Stack
 
 - **Frontend:** React 19 + Vite, CSS puro. SPA com navegação entre 6 telas controlada por estado.
-- **Backend:** Python (Flask) com XGBoost, pandas, scikit-learn. consome dados reais do CKAN (dengue), INMET (clima) e GIS (bairros/ZEIS).
+- **Backend:** Python (Flask) com XGBoost, pandas, scikit-learn. consome dados reais do CKAN (dengue), APAC (chuva) e GIS (bairros/ZEIS).
 - **ML:** Modelo XGBoost Regressor treinado com 8 features, 94 territórios. MAE ~4.04, R² ~0.87.
 
 ## Como rodar localmente
@@ -118,7 +118,7 @@ features normalizadas:
 | Feature | Origem |
 |---------|--------|
 | `tendencia_epidemiologica` | Variação % de casos de dengue vs. semana anterior (CKAN/SINAN) |
-| `condicoes_climaticas` | Chuva acumulada normalizada pela média histórica (INMET/BDMEP) |
+| `condicoes_climaticas` | Chuva acumulada normalizada pela média histórica (APAC) |
 | `focos_identificados` | Índice de focos de dengue identificados |
 | `vulnerabilidade_territorial` | Score socioespacial composto (IDH, densidade, ZEIS) |
 | `historico` | Severidade de surtos históricos nos últimos 5 anos |
@@ -129,7 +129,7 @@ features normalizadas:
 **Métricas:** MAE ~4.04 pontos | R² ~0.87 | 100 árvores, max_depth=4
 
 **Pipeline ETL:**
-1. Coleta: CKAN (dengue 2025: ~9.187 registros), INMET (estação A0013), lookup local
+1. Coleta: CKAN (dengue 2025: ~9.187 registros), APAC (chuva diária do Recife 2024-2025: 731 dias, ~9.628 leituras), lookup local
 2. Feature engineering: normalização para escala [0, 100]
 3. Predição: XGBoost retorna score contínuo
 4. Classificação: Crítico (≥85), Alto (70–84), Moderado (50–69), Baixo (<50)
@@ -162,5 +162,5 @@ features normalizadas:
 ## Fontes de dados externas
 
 - **CKAN Recife:** https://dados.recife.pe.gov.br — notificações de dengue (SINAN)
-- **INMET/BDMEP:** https://bdmep.inmet.gov.br — precipitação (estação A0013)
+- **APAC:** http://dados.apac.pe.gov.br:41120/boletins/historico-pluviometrico/ — chuva diária do Recife (temperatura de apoio: Open-Meteo archive)
 - **ESIG:** https://esigportal2.recife.pe.gov.br — polígonos dos 94 bairros e ZEIS

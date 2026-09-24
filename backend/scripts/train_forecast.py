@@ -27,7 +27,7 @@ def _precision_at_k(test, pred_col, truth_col, k=K):
 
 
 def main():
-    print("[train_forecast] Construindo painel (SINAN real + Open-Meteo)...")
+    print("[train_forecast] Construindo painel (SINAN real + APAC)...")
     panel = ff.build_panel(config.FORECAST_ANOS)
     df = ff.add_targets(ff.add_features(panel))
     widx = {cod: i for i, cod in enumerate(ff.semana_seq(config.FORECAST_ANOS))}
@@ -70,7 +70,7 @@ def main():
         "anos_treino": config.FORECAST_ANOS,
         "params": config.FORECAST_XGB_PARAMS,
         "backtest": {"cutoff": CUTOFF, "k": K, "metrics": metrics},
-        "fontes": {"casos": "SINAN (cache)", "clima": "Open-Meteo archive"},
+        "fontes": {"casos": "SINAN (cache)", "clima": "APAC (chuva) + Open-Meteo (temperatura)"},
     }
     config.FORECAST_META_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(config.FORECAST_META_FILE, "w", encoding="utf-8") as f:

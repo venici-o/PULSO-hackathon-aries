@@ -12,13 +12,13 @@ const FONTES = [
     variaveis: ["casos_semana_atual", "casos_semana_anterior", "tendencia_epidemiologica"],
   },
   {
-    nome: "INMET / BDMEP",
-    url: "https://bdmep.inmet.gov.br",
+    nome: "APAC - Agência Pernambucana de Águas e Clima",
+    url: "http://dados.apac.pe.gov.br:41120/boletins/historico-pluviometrico/",
     tipo: "Dados climáticos",
     descricao:
-      "Precipitação acumulada (mm) da estação meteorológica de Recife. Usado para calcular condições climáticas e risco de proliferação.",
+      "Histórico pluviométrico diário do Recife (média das estações da capital, 2024-2025). Usado para calcular condições climáticas e risco de proliferação. Temperatura de apoio via Open-Meteo.",
     atualizacao: "Diária",
-    registros: "Dados de chuva por semana",
+    registros: "731 dias (2024-2025), ~9.628 leituras",
     variaveis: ["chuva_mm", "condicoes_climaticas"],
   },
   {

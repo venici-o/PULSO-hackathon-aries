@@ -7,7 +7,7 @@ import pandas as pd
 from epiweeks import Week
 
 from app import config
-from app.services import clima_client
+from app.services import apac_client
 
 HORIZONTES = [1, 2, 3, 4]
 
@@ -55,7 +55,7 @@ def build_panel(anos: List[int]) -> pd.DataFrame:
     casos = pd.concat([_aggregate_sinan(y) for y in anos], ignore_index=True)
     casos = casos.groupby(["bairro_norm", "semana"], as_index=False)["casos"].sum()
 
-    clima = pd.concat([clima_client.get_clima_semana(y) for y in anos], ignore_index=True)
+    clima = pd.concat([apac_client.get_clima_semana(y) for y in anos], ignore_index=True)
     clima = clima.groupby("semana", as_index=False).agg(
         chuva_mm=("chuva_mm", "sum"),
         temp_media=("temp_media", "mean"),

@@ -87,6 +87,6 @@ def build_prioridades(semana_id: Optional[str] = None,
         "semana_alvo_cod": int(alvo_cod),
         "horizonte": horizon,
         "fonte_casos": "SINAN (cache)",
-        "fonte_clima": "Open-Meteo",
+        "fonte_clima": "APAC (chuva) + Open-Meteo (temperatura)",
     }
     return cur.reset_index(drop=True), meta
