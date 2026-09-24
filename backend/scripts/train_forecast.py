@@ -43,6 +43,8 @@ def main():
         # --- backtest out-of-time (para métrica honesta) ---
         train = d[d["widx"] + h <= cutoff_idx]
         test = d[d["widx"] > cutoff_idx].copy()
+        if train.empty or test.empty:
+            raise ValueError(f"Histórico insuficiente para treinar/validar horizonte {h}")
         m = xgb.XGBRegressor(**config.FORECAST_XGB_PARAMS)
         m.fit(train[ff.FEATURES], train[y])
         test["pred"] = np.clip(m.predict(test[ff.FEATURES]), 0, None)
@@ -71,6 +73,7 @@ def main():
         "params": config.FORECAST_XGB_PARAMS,
         "backtest": {"cutoff": CUTOFF, "k": K, "metrics": metrics},
         "fontes": {"casos": "SINAN (cache)", "clima": "APAC (chuva) + Open-Meteo (temperatura)"},
+        "dados_treino": panel.attrs.get("snapshot_meta", {}),
     }
     config.FORECAST_META_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(config.FORECAST_META_FILE, "w", encoding="utf-8") as f:
